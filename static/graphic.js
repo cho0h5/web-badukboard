@@ -5,6 +5,8 @@ const num_of_line = 19;
 let rocks = {};
 let coor = [];
 
+let state = 2;
+
 let canvas = document.getElementById("canvas");
 let ctx = canvas.getContext("2d");
 
@@ -91,7 +93,8 @@ class GameManager {
         let distance =
           Math.pow(coor[x_coor] - x, 2) + Math.pow(coor[y_coor] - y, 2);
         if (distance < Math.pow(r, 2)) {
-          downRock(x_coor, y_coor, 0);
+          console.log(x_coor, y_coor, state);
+          downRock(x_coor, y_coor, state);
           break;
         }
       }
@@ -99,9 +102,19 @@ class GameManager {
   }
 }
 
+function pick_remove() {
+  state = 0;
+}
+function pick_white() {
+  state = 1;
+}
+function pick_black() {
+  state = 2;
+}
+
 const gameManager = new GameManager();
 gameManager.run();
 
 canvas.addEventListener("mousedown", (e) => {
-  gameManager.checkDown(e.offsetX, e.offsetY, null);
+  gameManager.checkDown(e.offsetX, e.offsetY, state);
 });
