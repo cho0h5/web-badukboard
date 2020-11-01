@@ -1,4 +1,4 @@
-var ws = new WebSocket("ws://localhost:8090/");
+var ws = new WebSocket("ws://localhost:5500/ws");
 
 ws.onopen = (event) => {
   let sendData = { event: "open" };

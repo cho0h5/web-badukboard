@@ -15,9 +15,10 @@ var clients []*websocket.Conn
 func main() {
     clients = make([]*websocket.Conn, 0)
 
-	http.HandleFunc("/", webSocket)
+    http.HandleFunc("/ws", webSocket)
+    http.Handle("/", http.FileServer(http.Dir(".")))
 
-	http.ListenAndServe(":8090", nil)
+	http.ListenAndServe(":5500", nil)
 }
 
 func webSocket(w http.ResponseWriter, r *http.Request) {
