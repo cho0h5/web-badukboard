@@ -2,7 +2,7 @@ const size = 1080;
 const offset = 30;
 const num_of_line = 19;
 
-let rocks = [];
+let rocks = {};
 let coor = [];
 
 let canvas = document.getElementById("canvas");
@@ -18,6 +18,7 @@ class UI {
 
     // draw vertical and horizon lines
     // and calculate coor
+    coor = [];
     ctx.fillStyle = "rgb(0,0,0)";
     for (let i = 0; i < num_of_line; i++) {
       const line_coor = (i * (size - 2 * offset)) / (num_of_line - 1) + offset;
@@ -46,6 +47,31 @@ class UI {
         });
       });
     }
+
+    // draw rocks
+    for (const [x, rest] of Object.entries(rocks)) {
+      for (const [y, state] of Object.entries(rest)) {
+        switch (state) {
+          case 0:
+            continue;
+          case 1:
+            ctx.fillStyle = "rgb(233,234,239)";
+            break;
+          case 2:
+            ctx.fillStyle = "rgb(12,11,10)";
+            break;
+        }
+        ctx.beginPath();
+        ctx.arc(
+          coor[x],
+          coor[y],
+          ((coor[1] - coor[0]) * 0.9) / 2,
+          0,
+          2 * Math.PI
+        );
+        ctx.fill();
+      }
+    }
   }
 }
 
@@ -65,7 +91,7 @@ class GameManager {
         let distance =
           Math.pow(coor[x_coor] - x, 2) + Math.pow(coor[y_coor] - y, 2);
         if (distance < Math.pow(r, 2)) {
-          downRock(x_coor, y_coor, null);
+          downRock(x_coor, y_coor, 0);
           break;
         }
       }

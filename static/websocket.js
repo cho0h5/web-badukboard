@@ -6,20 +6,20 @@ ws.onopen = (event) => {
 };
 
 ws.onmessage = (event) => {
-    console.log(event.data)
-//   let recData = JSON.parse(event.data);
-//   switch (recData.event) {
-//     case "response":
-//       console.log(recData.data);
-//       break;
-//   }
+  rocks = JSON.parse(event.data);
+  console.log(rocks);
+  gameManager.run();
 };
 
 function downRock(x, y, state) {
-  console.log(x, y);
+  // state 0: nothing
+  // state 1: black rock
+  // state 2: white rock
+  x = parseInt(x);
+  y = parseInt(y);
   let sendData = {
-    event: "request",
-    data: [x, y],
+    event: "downRock",
+    data: { x: x, y: y, state: state },
   };
   ws.send(JSON.stringify(sendData));
 }
