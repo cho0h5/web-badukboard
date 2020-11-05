@@ -1,4 +1,4 @@
-var ws = new WebSocket("ws://localhost:5500/ws");
+var ws = new WebSocket("ws://cho0h5.iptime.org:5500/ws");
 
 ws.onopen = (event) => {
   let sendData = { event: "open" };

@@ -1,97 +1,92 @@
 package main
 
 import (
-    "log"
+	"encoding/json"
+	"log"
 	"net/http"
-    "encoding/json"
-    "github.com/spf13/cast"
-    "github.com/gorilla/websocket"
+
+	"github.com/gorilla/websocket"
+	"github.com/spf13/cast"
 )
 
 var u = websocket.Upgrader{}
-var rocks = map[int]map[int]int{};
+var rocks = map[int]map[int]int{}
 var clients []*websocket.Conn
 
 func main() {
-    clients = make([]*websocket.Conn, 0)
+	clients = make([]*websocket.Conn, 0)
 
-    http.HandleFunc("/ws", webSocket)
-    http.Handle("/", http.FileServer(http.Dir(".")))
+	http.HandleFunc("/ws", webSocket)
+	http.Handle("/", http.FileServer(http.Dir(".")))
 
 	http.ListenAndServe(":5500", nil)
 }
 
 func webSocket(w http.ResponseWriter, r *http.Request) {
-    // ready websocket
-    u.CheckOrigin = func(r *http.Request) bool { return true }
-    c, err := u.Upgrade(w, r, nil)
-    if err != nil {
-        log.Println(err)
-    }
+	// ready websocket
+	u.CheckOrigin = func(r *http.Request) bool { return true }
+	c, err := u.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
+	}
 
-    clients = append(clients, c)
+	clients = append(clients, c)
 
-    // receive and send
-    for {
-        // receive
-        messageType, message, err := c.ReadMessage()
-        if err != nil {
-            log.Println(err)
-            break
-        }
+	// receive and send
+	for {
+		// receive
+		messageType, message, err := c.ReadMessage()
+		if err != nil {
+			log.Println(err)
+			break
+		}
 
-        var obj map[string]interface{}
-        err = json.Unmarshal(message, &obj)
-        chkError(err)
+		var obj map[string]interface{}
+		err = json.Unmarshal(message, &obj)
+		chkError(err)
 
-        log.Println(obj["event"])
+		log.Println(obj["event"])
 
-        switch obj["event"] {
-        case "open":
-            log.Println("someone entered")
+		switch obj["event"] {
+		case "open":
+			log.Println("someone entered")
 
-            // send
-            b, err := json.Marshal(rocks)
-            chkError(err)
-            err = c.WriteMessage(messageType, b)
-            chkError(err)
+			// send
+            send(c, messageType)
+		case "downRock":
+			data := cast.ToStringMapInt(obj["data"])
+			log.Println(data["x"], data["y"], data["state"])
 
-        case "downRock":
-            data := cast.ToStringMapInt(obj["data"])
-            log.Println(data["x"], data["y"], data["state"])
+			// record rock
+			if _, ok := rocks[data["x"]]; !ok {
+				rocks[data["x"]] = map[int]int{}
+			}
+			rocks[data["x"]][data["y"]] = data["state"]
 
-            // record rock
-            if _, ok := rocks[data["x"]]; !ok {
-                rocks[data["x"]] = map[int]int{}
-            }
-            rocks[data["x"]][data["y"]] = data["state"]
-
-            // send
-            b, err := json.Marshal(rocks)
-            chkError(err)
-
-            for _, client := range clients {
-                err = client.WriteMessage(messageType, b)
-                chkError(err)
-            }
-        case "removeAll":
-            rocks = make(map[int]map[int]int)
+			// send
+            send(c, messageType)
+		case "removeAll":
+			rocks = make(map[int]map[int]int)
 
             // send
-            b, err := json.Marshal(rocks)
-            chkError(err)
+            send(c, messageType)
+		}
 
-            for _, client := range clients {
-                err = client.WriteMessage(messageType, b)
-                chkError(err)
-            }
-        }
+	}
+}
 
-    }
+func send(client *websocket.Conn, messageType int) {
+	b, err := json.Marshal(rocks)
+	chkError(err)
+
+	for _, client := range clients {
+		err = client.WriteMessage(messageType, b)
+		chkError(err)
+	}
 }
 
 func chkError(err error) {
-    if err != nil {
-        log.Println(err)
-    }
+	if err != nil {
+		log.Println(err)
+	}
 }
