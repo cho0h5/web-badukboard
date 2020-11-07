@@ -54,7 +54,7 @@ func webSocket(w http.ResponseWriter, r *http.Request) {
 		log.Println(obj["event"])
 
 		switch obj["event"] {
-		case "open":
+		case "enter":
 			log.Println("someone entered")
 
 			// send

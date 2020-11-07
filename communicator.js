@@ -1,39 +1,50 @@
-// var ws = new WebSocket("ws://cho0h5.iptime.org:5500/ws");
+class Communicator {
+  constructor(drawStonesFunction) {
+    this.ws = new WebSocket("ws://cho0h5.iptime.org:5500/ws"); // Todo: 호스트이름 자동 변경으로
 
-// let state = 2;
-// let rocks = [];
+    this.ws.onopen = (event) => {
+      let data = { event: "enter", id: "" }; // Todo: 식별기능 추가(id)
+      this.ws.send(JSON.stringify(data));
+    };
+    this.ws.onmessage = (event) => {
+      const rocks = JSON.parse(event.data);
+      console.log(rocks);
+      drawStonesFunction(rocks);
+    };
+  }
 
-// ws.onopen = (event) => {
-//   let sendData = { event: "open" };
-//   ws.send(JSON.stringify(sendData));
-// };
+  downStone(x, y, state) {
+    // state 0: undo
+    // state 1: black rock
+    // state 2: white rock
 
-// ws.onmessage = (event) => {
-//   rocks = JSON.parse(event.data);
-//   console.log(rocks);
-//   gameManager.run();
-// };
+    x = parseInt(x);
+    y = parseInt(y);
 
-// function downRock(x, y, state) {
-//   // state 0: remove
-//   // state 1: black rock
-//   // state 2: white rock
+    // set event (undo or downRock)
+    let data = {};
+    switch (state) {
+      case 0:
+        data = { event: "undo" };
+        break;
+      default:
+        data = {
+          event: "downRock",
+          data: { x: x, y: y, state: state },
+        };
+        break;
+    }
 
-//   x = parseInt(x);
-//   y = parseInt(y);
+    this.ws.send(JSON.stringify(data));
+  }
 
-//   let sendData = {
-//     event: "downRock",
-//     data: { x: x, y: y, state: state },
-//   };
-//   ws.send(JSON.stringify(sendData));
-// }
+  removeAllStones() {
+    if (confirm("Remove all stones really?") == false) return;
 
-// function remove_all() {
-//   if(confirm("Remove all stones really?") == false) return;
+    let data = {
+      event: "removeAll",
+    };
 
-//   let sendData = {
-//     event: "removeAll",
-//   };
-//   ws.send(JSON.stringify(sendData));
-// }
+    this.ws.send(JSON.stringify(data));
+  }
+}

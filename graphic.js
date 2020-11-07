@@ -70,6 +70,8 @@ class UI {
       case 2:
         this.ctx.fillStyle = "rgb(12,11,10)";
         break;
+      default:
+        return;
     }
 
     // draw stone
