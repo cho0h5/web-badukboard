@@ -9,8 +9,14 @@ import (
 	"github.com/spf13/cast"
 )
 
+type Rock struct {
+	X     int `json:"x"`
+	Y     int `json:"y"`
+	State int `json:"state"`
+}
+
 var u = websocket.Upgrader{}
-var rocks = map[int]map[int]int{}
+var rocks = []Rock{}
 var clients []*websocket.Conn
 
 func main() {
@@ -52,24 +58,23 @@ func webSocket(w http.ResponseWriter, r *http.Request) {
 			log.Println("someone entered")
 
 			// send
-            send(c, messageType)
+			send(c, messageType)
 		case "downRock":
 			data := cast.ToStringMapInt(obj["data"])
 			log.Println(data["x"], data["y"], data["state"])
 
 			// record rock
-			if _, ok := rocks[data["x"]]; !ok {
-				rocks[data["x"]] = map[int]int{}
-			}
-			rocks[data["x"]][data["y"]] = data["state"]
+			rock := Rock{data["x"], data["y"], data["state"]}
+			rocks = append(rocks, rock)
+			log.Println(rocks)
 
 			// send
-            send(c, messageType)
+			send(c, messageType)
 		case "removeAll":
-			rocks = make(map[int]map[int]int)
+			rocks = []Rock{}
 
-            // send
-            send(c, messageType)
+			// send
+			send(c, messageType)
 		}
 
 	}
@@ -81,6 +86,13 @@ func send(client *websocket.Conn, messageType int) {
 
 	for _, client := range clients {
 		err = client.WriteMessage(messageType, b)
+		if err != nil {
+			for i, c := range clients {
+				if c == client {
+					clients = append(clients[:i], clients[i+1:]...)
+				}
+			}
+		}
 		chkError(err)
 	}
 }
