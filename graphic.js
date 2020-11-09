@@ -85,4 +85,22 @@ class UI {
     );
     this.ctx.fill();
   }
+
+  fun() {
+    console.log("ih");
+  }
+
+  drawTriangle(stone) {
+    if (stone.state == 1) {
+      this.ctx.fillStyle = "rgb(12,11,10)";
+    } else if (stone.state == 2) {
+      this.ctx.fillStyle = "rgb(233,234,239)";
+    }
+
+    this.ctx.beginPath();
+    this.ctx.moveTo(this.coor[stone.x], this.coor[stone.y]);
+    this.ctx.lineTo(this.coor[stone.x] + this.offset / 1.5, this.coor[stone.y]);
+    this.ctx.lineTo(this.coor[stone.x], this.coor[stone.y] + this.offset / 1.5);
+    this.ctx.fill();
+  }
 }

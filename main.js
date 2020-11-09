@@ -1,33 +1,20 @@
 const size = 1080;
 const num_of_line = 19;
 
-class GameManager {
-  run() {
-
-  }
-}
-
-const gameManager = new GameManager();
-gameManager.run();
-
-///////////////////////////////////////
-
 // test UI
-const ui = new UI(size, num_of_line);
+ui = new UI(size, num_of_line);
 ui.drawBoard();
 
-// test Input
-const input = new Input(size, num_of_line, downStone);
-
 // test Communicator
-function drawStones(stones) {
+function drawStonesFunction(stones) {
+  ui.drawBoard();
   stones.forEach((stone) => {
-    ui.drawStone(stone.x, stone.y, stone.state);
+    this.ui.drawStone(stone.x, stone.y, stone.state);
   });
+  if (stones.length > 0) ui.drawTriangle(stones[stones.length - 1]);
 }
 
-const communicator = new Communicator(drawStones);
-
-function downStone(x, y, state) {
-  communicator.downStone(x, y, state);
-}
+// test Input
+input = new Input(size, num_of_line, (x, y, state) => {
+  downStone(x, y, state);
+});

@@ -70,6 +70,11 @@ func webSocket(w http.ResponseWriter, r *http.Request) {
 
 			// send
 			send(c, messageType)
+		case "undo":
+			if len(rocks) >= 1 {
+				rocks = rocks[:len(rocks)-1]
+				send(c, messageType)
+			}
 		case "removeAll":
 			rocks = []Rock{}
 

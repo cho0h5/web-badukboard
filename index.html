@@ -1,31 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Baduk board</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
     <div id="container">
-        <div id="controller">
-            <div class="buttons has-addons">
-                <button class="button is-warning" onclick="input.pick_remove();">Remove</button>
-                <button class="button is-ghost" onclick="input.pick_white();">White</button>
-                <button class="button is-black" onclick="input.pick_black();">Black</button>
-            </div>
-            <div>
-                <button class="button is-danger" onclick="remove_all();">Remove All</button>
-            </div>
+      <div id="controller">
+        <div class="buttons has-addons">
+          <button class="button is-warning" onclick="pick_undo();">Undo</button>
+          <button class="button is-ghost" onclick="pick_white();">White</button>
+          <button class="button is-black" onclick="pick_black();">Black</button>
         </div>
+        <div>
+          <button class="button is-danger" onclick="removeAllStones();">
+            Remove All
+          </button>
+        </div>
+      </div>
 
-        <canvas id="canvas" width=1080 height=1080></canvas>
+      <canvas id="canvas" width="1080" height="1080"></canvas>
     </div>
 
     <script src="graphic.js"></script>
     <script src="input.js"></script>
     <script src="communicator.js"></script>
     <script src="main.js"></script>
-</body>
+  </body>
 </html>

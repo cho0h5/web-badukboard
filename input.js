@@ -1,3 +1,5 @@
+let state = 2;
+
 class Input {
   // 중복
   constructor(size, num_of_line, downStoneFunction) {
@@ -5,8 +7,6 @@ class Input {
     this.offset = size / 36;
     this.num_of_line = num_of_line;
     this.downStone = downStoneFunction;
-
-    this.state = 2; // state -> color 교체
 
     this.coor = [];
 
@@ -28,20 +28,6 @@ class Input {
     }
   }
 
-  // set stone's color(state)
-  // state 0: undo
-  // state 1: black rock
-  // state 2: white rock
-  pick_remove() {
-    this.state = 0;
-  }
-  pick_white() {
-    this.state = 1;
-  }
-  pick_black() {
-    this.state = 2;
-  }
-
   onclick(x, y) {
     // calculate real mouse coor
     const ratio = this.canvas.width / this.canvas.getBoundingClientRect().width;
@@ -56,10 +42,24 @@ class Input {
           Math.pow(this.coor[x_coor] - x, 2) +
           Math.pow(this.coor[y_coor] - y, 2);
         if (distance <= Math.pow(radius, 2)) {
-          this.downStone(x_coor, y_coor, this.state); // 수정 콜백
+          downStone(x_coor, y_coor, state); // 수정 콜백
           break;
         }
       }
     }
   }
+}
+
+// set stone's color(state)
+// state 0: undo
+// state 1: black rock
+// state 2: white rock
+function pick_undo() {
+  downStone(-1, -1, 0);
+}
+function pick_white() {
+  state = 1;
+}
+function pick_black() {
+  state = 2;
 }
